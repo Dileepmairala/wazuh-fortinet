@@ -11,6 +11,12 @@ This guide provides step-by-step instructions for integrating Fortinet firewall 
 ## 1. Fortinet Firewall Configuration
 
 1. Log into Fortinet firewall web interface
+Go to Log & Report > Log Setting.
+Click the Syslog Server tab.
+Click Add to display the configuration editor
+
+and search syslog and redirects to service, in that add syslog ip server and with port 514
+
 2. Enable syslog forwarding
 3. Configure syslog server IP (Wazuh agent IP)
 4. Set syslog port to 514
@@ -54,6 +60,16 @@ sudo systemctl restart rsyslog
 ```
 
 ## 3. Wazuh Manager Configuration
+
+### decoders file add
+in /var/ossec/etc/decoders/fortinet_decoders.xml
+"""
+<decoder name="fortinet">
+  <prematch>^\S+ devname=\S+ </prematch>
+  <regex offset="after_prematch">devname=(\S+) devid=(\S+) logid=(\S+) type=(\S+) subtype=(\S+)</regex>
+  <order>device_name, device_id, log_id, type, subtype</order>
+</decoder>
+
 
 ### 3.1 Custom Rules Configuration
 Create/edit `/var/ossec/etc/rules/local_rules.xml`:
